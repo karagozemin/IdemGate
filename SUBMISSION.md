@@ -203,8 +203,8 @@ The repository includes a realistic [sample bundle](idemgate-evidence-bundle.jso
 | Concurrency race | 50 workers; 1 winner; 49 blocked | PASS |
 | Invariant query | 0 violating intent keys; maximum successful outcomes = 1 | PASS |
 
-**Sample invariant verdict:** PASS  
-**Sample promotion gate:** GO  
+**Sample invariant verdict:** PASS<br>
+**Sample promotion gate:** GO<br>
 **Real deployment rule:** unverified or incomplete evidence is always NO-GO.
 
 ## Troubleshooting
