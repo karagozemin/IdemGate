@@ -1,0 +1,44 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-008",
+  "scenario": "ledger_invariant_check",
+  "observed_at": "2026-06-10T08:50:00Z",
+  "input_redacted_verbatim": "SELECT intentKey, COUNT(*) AS successfulSideEffectCount FROM side_effect_journal WHERE run_id='idemgate-prod-us-east-1-20260610T084215Z-a91c7e2' AND status='SUCCEEDED' GROUP BY intentKey HAVING COUNT(*) > 1",
+  "expected_behavior": "Safety query returns zero intents with more than one success; liveness query returns zero lost accepted-success intents; non-success terminal intents have zero unexpected silent successes.",
+  "actual_result": "Safety PASS: maximum successful side effects per intent was one. Liveness PASS: all 3 accepted success-terminal intents had exactly one outcome and zero were lost. No rejected, compensated, or repair intent had an unexpected success.",
+  "evidence": {
+    "ledger_snapshot": {
+      "accepted_success_intents": 3,
+      "accepted_success_intents_with_exactly_one_side_effect": 3,
+      "lost_accepted_success_intents": 0,
+      "maximum_successful_side_effects_per_intent": 1,
+      "unexpected_non_success_terminal_successes": 0,
+      "orphan_successes": 0,
+      "result_hash_mismatches": 0
+    },
+    "dynamodb_condition_result": {
+      "safety_violating_intent_keys": [],
+      "liveness_lost_intent_keys": [],
+      "unexpected_non_success_terminal_intent_keys": []
+    },
+    "sqs_dlq_metric": {
+      "visible": 0
+    },
+    "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-proof-gate:invariant-a91c7e2",
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "InvariantViolationCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-008"
+      },
+      "value": 0,
+      "unit": "Count"
+    },
+    "http_status": null,
+    "side_effect_journal_count": 3,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-008.json"
+  },
+  "verdict": "PASS"
+}

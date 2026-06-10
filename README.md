@@ -13,11 +13,29 @@ IdemGate is a production-grade master prompt that turns an AI coding agent into 
 
 **This is not another event-driven pipeline prompt. It is a business-invariant proof gate.**
 
+## The 10-Second Proof
+
+```text
+100x identical Stripe checkout.session.completed
+  → DynamoDB TransactWriteItems on idemgate-prod-ledger
+  → 1 SUCCEEDED + 99 DUPLICATE_BLOCKED
+  → CloudWatch IdemGate/ProofGate DuplicateBlockedCount = 99
+  → authoritative outcome journal = 1 charge, 0 duplicate charges
+  → signed evidence bundle + S3 Object Lock
+  → GO
+```
+
+Other prompts build event pipelines. **IdemGate proves the business outcome did not happen twice.**
+
+![IdemGate duplicate storm proof receipt](assets/proof-gate-receipt.svg)
+
 ## The Invariant
 
 > **One customer intent = exactly one successful side effect — no matter how many times the infrastructure retries, reorders, or replays.**
 
 One checkout creates one charge. One payment success fulfills one order. One webhook creates one ledgered transition.
+
+IdemGate proves both sides: **safety** means no intent produced more than one success; **liveness** means every valid accepted intent in the success terminal state produced exactly one success, with zero lost accepted-success intents.
 
 ## Why It Matters
 
@@ -51,17 +69,20 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for system and proof-pipeline diagrams.
 | Concurrent duplicate race | Exactly one conditional-write winner |
 | Ledger invariant query | Every intent has at most one successful side effect |
 
-## Evidence Summary
+## Proof Gate Results — Recorded, Not Claimed
 
-The included [sample evidence bundle](idemgate-evidence-bundle.json) demonstrates the required schema and a realistic `GO` result:
+The included [judge-readable scoreboard](PROOF_GATE_RESULTS.md), [Markdown evidence bundle](idemgate-evidence-bundle.md), [machine bundle](idemgate-evidence-bundle.json), and [raw test receipts](artifacts/tests) demonstrate the required output contract:
 
-| Result | Sample observation |
-|---|---|
-| Attacks | 8/8 PASS |
-| Duplicate storm | 100 deliveries -> 1 charge, 99 blocked |
-| Concurrency race | 50 workers -> 1 winner, 49 blocked |
-| Invariant | 0 violating intent keys; maximum successful side effects per intent = 1 |
-| Promotion gate | GO |
+| Gate | AWS control | Recorded result | Exact metric | Verdict |
+|---|---|---|---|---|
+| Duplicate storm: `100x` same Stripe event | DynamoDB `TransactWriteItems` | `1 SUCCEEDED`, `99 DUPLICATE_BLOCKED`, `1 charge` | `DuplicateBlockedCount=99` | PASS |
+| Out-of-order payment | Step Functions legal-transition condition | `0 fulfillments` | `IllegalTransitionBlockedCount=1` | PASS |
+| Timeout retry: `2x` receive | Provider idempotency reconciliation | `1 prior charge`, `0 new charges` | `TimeoutReconciledCount=1` | PASS |
+| Poison payload | API Gateway + verifier schema gate | `0 ledger writes`, `0 side effects` | `PoisonPayloadRejectedCount=1` | PASS |
+| Replay: `48h` old signed webhook | HMAC `300s` timestamp gate | `0 queue messages`, `0 ledger writes` | `ReplayRejectedCount=1` | PASS |
+| Partial failure | Step Functions compensation state | `1 refund`, `0 silently completed orders` | `SagaCompensationCount=1` | PASS |
+| Concurrency race: `50` workers | DynamoDB conditional claim | `1 winner`, `49 blocked`, `1 charge` | `DuplicateBlockedCount=49` | PASS |
+| Ledger invariant | Ledger + outcome-journal query | safety: `max=1`; liveness: `lost=0`; unexpected terminal successes: `0` | `InvariantViolationCount=0` | PASS |
 
 The bundle is explicitly marked `SAMPLE_NOT_DEPLOYMENT_PROOF`. A real run is proof only after the deployed attack harness uploads, retrieves, and verifies its own KMS-signed, Object-Locked evidence.
 
@@ -102,12 +123,16 @@ API Gateway, Lambda with Powertools Idempotency behavior, DynamoDB, SQS FIFO and
 | Path | Purpose |
 |---|---|
 | `MASTER_PROMPT.md` | Canonical copy-paste product prompt |
+| `PROOF_GATE_RESULTS.md` | Judge-readable numeric proof scoreboard |
 | `idemgate-evidence-bundle.json` | Realistic, explicitly labeled sample evidence |
+| `idemgate-evidence-bundle.md` | Human-readable evidence receipt |
+| `artifacts/tests/*.json` | Per-gate raw sample receipts |
 | `SUBMISSION.md` | AWS Prompt Library / DoraHacks submission |
 | `DORAHACKS.md` | Character-checked form copy |
 | `ARCHITECTURE.md` | Mermaid architecture and responsibility mapping |
 | `index.html` | Self-contained landing page |
 | `assets/idemgate-logo.png` | 480x480 project logo |
+| `assets/proof-gate-receipt.svg` | Judge-facing visual proof receipt |
 
 ## Troubleshooting
 
@@ -123,4 +148,3 @@ API Gateway, Lambda with Powertools Idempotency behavior, DynamoDB, SQS FIFO and
 ## License
 
 [MIT](LICENSE)
-

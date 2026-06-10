@@ -1,0 +1,44 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-001",
+  "scenario": "duplicate_storm",
+  "observed_at": "2026-06-10T08:43:00Z",
+  "input_redacted_verbatim": "{\"eventId\":\"evt_01JY4M3G\",\"intentKey\":\"checkout_ig_001\",\"type\":\"checkout.confirmed\",\"amount\":4900,\"currency\":\"USD\"}",
+  "expected_behavior": "100 deliveries produce exactly 1 charge and 99 duplicates_blocked.",
+  "actual_result": "100 accepted deliveries; 1 charge journal entry; 99 duplicate acquisitions rejected.",
+  "evidence": {
+    "ledger_snapshot": {
+      "intentKey": "checkout_ig_001",
+      "eventId": "evt_01JY4M3G",
+      "operationHash": "sha256:cc409c3d...a028",
+      "status": "SUCCEEDED",
+      "resultHash": "sha256:ca82f17a...91f0"
+    },
+    "dynamodb_condition_result": {
+      "winners": 1,
+      "conditional_check_failed": 99,
+      "condition": "attribute_not_exists(intentKey)"
+    },
+    "sqs_dlq_metric": {
+      "visible": 0
+    },
+    "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:dup-storm-a91c7e2",
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "DuplicateBlockedCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-001"
+      },
+      "value": 99,
+      "unit": "Count"
+    },
+    "http_status": {
+      "202": 100
+    },
+    "side_effect_journal_count": 1,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-001.json"
+  },
+  "verdict": "PASS"
+}

@@ -1,0 +1,37 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-004",
+  "scenario": "poison_payload",
+  "observed_at": "2026-06-10T08:46:00Z",
+  "input_redacted_verbatim": "{\"eventId\":\"evt_bad\",\"intentKey\":null,\"payload\":\"<malformed-and-oversized-redacted>\"}",
+  "expected_behavior": "Malformed input is rejected or isolated; ledger remains clean.",
+  "actual_result": "Schema-invalid request rejected at ingress; no queue message and no ledger row.",
+  "evidence": {
+    "ledger_snapshot": null,
+    "dynamodb_condition_result": {
+      "writes": 0
+    },
+    "sqs_dlq_metric": {
+      "visible": 0,
+      "messages_sent": 0
+    },
+    "stepfunctions_execution_arn": null,
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "PoisonPayloadRejectedCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-004"
+      },
+      "value": 1,
+      "unit": "Count"
+    },
+    "http_status": {
+      "400": 1
+    },
+    "side_effect_journal_count": 0,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-004.json"
+  },
+  "verdict": "PASS"
+}

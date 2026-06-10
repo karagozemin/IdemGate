@@ -1,0 +1,42 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-007",
+  "scenario": "concurrency_race",
+  "observed_at": "2026-06-10T08:49:00Z",
+  "input_redacted_verbatim": "{\"eventId\":\"evt_01JY4M3M\",\"intentKey\":\"checkout_ig_007\",\"parallelism\":50}",
+  "expected_behavior": "Exactly one conditional-write winner and at most one successful side effect.",
+  "actual_result": "50 concurrent workers raced; 1 acquired IN_PROGRESS; 49 lost; one charge committed.",
+  "evidence": {
+    "ledger_snapshot": {
+      "intentKey": "checkout_ig_007",
+      "eventId": "evt_01JY4M3M",
+      "status": "SUCCEEDED",
+      "resultHash": "sha256:a120...7e02"
+    },
+    "dynamodb_condition_result": {
+      "winners": 1,
+      "conditional_check_failed": 49
+    },
+    "sqs_dlq_metric": {
+      "visible": 0
+    },
+    "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:race-a91c7e2",
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "DuplicateBlockedCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-007"
+      },
+      "value": 49,
+      "unit": "Count"
+    },
+    "http_status": {
+      "202": 50
+    },
+    "side_effect_journal_count": 1,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-007.json"
+  },
+  "verdict": "PASS"
+}

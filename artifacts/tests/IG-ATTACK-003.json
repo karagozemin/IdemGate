@@ -1,0 +1,44 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-003",
+  "scenario": "timeout_retry",
+  "observed_at": "2026-06-10T08:45:00Z",
+  "input_redacted_verbatim": "{\"eventId\":\"evt_01JY4M3J\",\"intentKey\":\"checkout_ig_003\",\"fault\":\"timeout_after_charge\"}",
+  "expected_behavior": "Redelivery reconciles the provider idempotency key and creates no second charge.",
+  "actual_result": "First worker timed out after provider response; retry reconciled stored charge and committed one result.",
+  "evidence": {
+    "ledger_snapshot": {
+      "intentKey": "checkout_ig_003",
+      "eventId": "evt_01JY4M3J",
+      "status": "SUCCEEDED",
+      "downstreamIdempotencyKey": "idemgate/checkout_ig_003",
+      "resultHash": "sha256:031b...77d0"
+    },
+    "dynamodb_condition_result": {
+      "lease_recoveries": 1,
+      "second_success_write_blocked": true
+    },
+    "sqs_dlq_metric": {
+      "receives": 2,
+      "visible": 0
+    },
+    "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:timeout-retry-a91c7e2",
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "TimeoutReconciledCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-003"
+      },
+      "value": 1,
+      "unit": "Count"
+    },
+    "http_status": {
+      "202": 1
+    },
+    "side_effect_journal_count": 1,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-003.json"
+  },
+  "verdict": "PASS"
+}

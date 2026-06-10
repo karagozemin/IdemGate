@@ -1,0 +1,42 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-002",
+  "scenario": "out_of_order",
+  "observed_at": "2026-06-10T08:44:00Z",
+  "input_redacted_verbatim": "{\"eventId\":\"evt_01JY4M3H\",\"intentKey\":\"order_ig_002\",\"type\":\"payment_succeeded\"}",
+  "expected_behavior": "Payment before order creation is held or safely rejected; no fulfillment.",
+  "actual_result": "Transition rejected as illegal; fulfillment count remained zero.",
+  "evidence": {
+    "ledger_snapshot": {
+      "intentKey": "order_ig_002",
+      "eventId": "evt_01JY4M3H",
+      "status": "FAILED",
+      "resultHash": "sha256:b41d...9a11"
+    },
+    "dynamodb_condition_result": {
+      "transaction_cancelled": true,
+      "reason": "ORDER_CREATED state absent"
+    },
+    "sqs_dlq_metric": {
+      "visible": 0
+    },
+    "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:out-of-order-a91c7e2",
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "IllegalTransitionBlockedCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-002"
+      },
+      "value": 1,
+      "unit": "Count"
+    },
+    "http_status": {
+      "202": 1
+    },
+    "side_effect_journal_count": 0,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-002.json"
+  },
+  "verdict": "PASS"
+}

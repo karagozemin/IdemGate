@@ -16,15 +16,40 @@
       "expected_behavior": "100 deliveries produce exactly 1 charge and 99 duplicates_blocked.",
       "actual_result": "100 accepted deliveries; 1 charge journal entry; 99 duplicate acquisitions rejected.",
       "evidence": {
-        "ledger_snapshot": {"intentKey":"checkout_ig_001","eventId":"evt_01JY4M3G","operationHash":"sha256:cc409c3d...a028","status":"SUCCEEDED","resultHash":"sha256:ca82f17a...91f0"},
-        "dynamodb_condition_result": {"winners":1,"conditional_check_failed":99,"condition":"attribute_not_exists(intentKey)"},
-        "sqs_dlq_metric": {"visible":0},
+        "ledger_snapshot": {
+          "intentKey": "checkout_ig_001",
+          "eventId": "evt_01JY4M3G",
+          "operationHash": "sha256:cc409c3d...a028",
+          "status": "SUCCEEDED",
+          "resultHash": "sha256:ca82f17a...91f0"
+        },
+        "dynamodb_condition_result": {
+          "winners": 1,
+          "conditional_check_failed": 99,
+          "condition": "attribute_not_exists(intentKey)"
+        },
+        "sqs_dlq_metric": {
+          "visible": 0
+        },
         "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:dup-storm-a91c7e2",
-        "cloudwatch_metric": {"duplicates_blocked":99,"side_effects_succeeded":1},
-        "http_status": {"202":100},
-        "side_effect_journal_count": 1
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "DuplicateBlockedCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-001"
+          },
+          "value": 99,
+          "unit": "Count"
+        },
+        "http_status": {
+          "202": 100
+        },
+        "side_effect_journal_count": 1,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-001.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:43:00Z"
     },
     {
       "test_id": "IG-ATTACK-002",
@@ -33,15 +58,38 @@
       "expected_behavior": "Payment before order creation is held or safely rejected; no fulfillment.",
       "actual_result": "Transition rejected as illegal; fulfillment count remained zero.",
       "evidence": {
-        "ledger_snapshot": {"intentKey":"order_ig_002","eventId":"evt_01JY4M3H","status":"FAILED","resultHash":"sha256:b41d...9a11"},
-        "dynamodb_condition_result": {"transaction_cancelled":true,"reason":"ORDER_CREATED state absent"},
-        "sqs_dlq_metric": {"visible":0},
+        "ledger_snapshot": {
+          "intentKey": "order_ig_002",
+          "eventId": "evt_01JY4M3H",
+          "status": "FAILED",
+          "resultHash": "sha256:b41d...9a11"
+        },
+        "dynamodb_condition_result": {
+          "transaction_cancelled": true,
+          "reason": "ORDER_CREATED state absent"
+        },
+        "sqs_dlq_metric": {
+          "visible": 0
+        },
         "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:out-of-order-a91c7e2",
-        "cloudwatch_metric": {"illegal_transitions_blocked":1},
-        "http_status": {"202":1},
-        "side_effect_journal_count": 0
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "IllegalTransitionBlockedCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-002"
+          },
+          "value": 1,
+          "unit": "Count"
+        },
+        "http_status": {
+          "202": 1
+        },
+        "side_effect_journal_count": 0,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-002.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:44:00Z"
     },
     {
       "test_id": "IG-ATTACK-003",
@@ -50,15 +98,40 @@
       "expected_behavior": "Redelivery reconciles the provider idempotency key and creates no second charge.",
       "actual_result": "First worker timed out after provider response; retry reconciled stored charge and committed one result.",
       "evidence": {
-        "ledger_snapshot": {"intentKey":"checkout_ig_003","eventId":"evt_01JY4M3J","status":"SUCCEEDED","downstreamIdempotencyKey":"idemgate/checkout_ig_003","resultHash":"sha256:031b...77d0"},
-        "dynamodb_condition_result": {"lease_recoveries":1,"second_success_write_blocked":true},
-        "sqs_dlq_metric": {"receives":2,"visible":0},
+        "ledger_snapshot": {
+          "intentKey": "checkout_ig_003",
+          "eventId": "evt_01JY4M3J",
+          "status": "SUCCEEDED",
+          "downstreamIdempotencyKey": "idemgate/checkout_ig_003",
+          "resultHash": "sha256:031b...77d0"
+        },
+        "dynamodb_condition_result": {
+          "lease_recoveries": 1,
+          "second_success_write_blocked": true
+        },
+        "sqs_dlq_metric": {
+          "receives": 2,
+          "visible": 0
+        },
         "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:timeout-retry-a91c7e2",
-        "cloudwatch_metric": {"timeout_reconciliations":1,"side_effects_succeeded":1},
-        "http_status": {"202":1},
-        "side_effect_journal_count": 1
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "TimeoutReconciledCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-003"
+          },
+          "value": 1,
+          "unit": "Count"
+        },
+        "http_status": {
+          "202": 1
+        },
+        "side_effect_journal_count": 1,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-003.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:45:00Z"
     },
     {
       "test_id": "IG-ATTACK-004",
@@ -68,14 +141,32 @@
       "actual_result": "Schema-invalid request rejected at ingress; no queue message and no ledger row.",
       "evidence": {
         "ledger_snapshot": null,
-        "dynamodb_condition_result": {"writes":0},
-        "sqs_dlq_metric": {"visible":0,"messages_sent":0},
+        "dynamodb_condition_result": {
+          "writes": 0
+        },
+        "sqs_dlq_metric": {
+          "visible": 0,
+          "messages_sent": 0
+        },
         "stepfunctions_execution_arn": null,
-        "cloudwatch_metric": {"payloads_rejected":1},
-        "http_status": {"400":1},
-        "side_effect_journal_count": 0
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "PoisonPayloadRejectedCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-004"
+          },
+          "value": 1,
+          "unit": "Count"
+        },
+        "http_status": {
+          "400": 1
+        },
+        "side_effect_journal_count": 0,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-004.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:46:00Z"
     },
     {
       "test_id": "IG-ATTACK-005",
@@ -84,15 +175,38 @@
       "expected_behavior": "Payment is compensated or marked NEEDS_REPAIR; order is never silently completed.",
       "actual_result": "Fulfillment failed; refund compensation succeeded; saga ended COMPENSATED.",
       "evidence": {
-        "ledger_snapshot": {"intentKey":"checkout_ig_005","eventId":"evt_01JY4M3K","status":"FAILED","resultHash":"sha256:bb82...e109","terminalState":"COMPENSATED"},
-        "dynamodb_condition_result": {"compensation_transition_committed":true},
-        "sqs_dlq_metric": {"visible":0},
+        "ledger_snapshot": {
+          "intentKey": "checkout_ig_005",
+          "eventId": "evt_01JY4M3K",
+          "status": "FAILED",
+          "resultHash": "sha256:bb82...e109",
+          "terminalState": "COMPENSATED"
+        },
+        "dynamodb_condition_result": {
+          "compensation_transition_committed": true
+        },
+        "sqs_dlq_metric": {
+          "visible": 0
+        },
         "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:partial-failure-a91c7e2",
-        "cloudwatch_metric": {"saga_compensations":1,"needs_repair":0},
-        "http_status": {"202":1},
-        "side_effect_journal_count": 0
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "SagaCompensationCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-005"
+          },
+          "value": 1,
+          "unit": "Count"
+        },
+        "http_status": {
+          "202": 1
+        },
+        "side_effect_journal_count": 0,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-005.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:47:00Z"
     },
     {
       "test_id": "IG-ATTACK-006",
@@ -102,14 +216,32 @@
       "actual_result": "Timestamp exceeded 300-second window; request rejected.",
       "evidence": {
         "ledger_snapshot": null,
-        "dynamodb_condition_result": {"writes":0},
-        "sqs_dlq_metric": {"messages_sent":0,"visible":0},
+        "dynamodb_condition_result": {
+          "writes": 0
+        },
+        "sqs_dlq_metric": {
+          "messages_sent": 0,
+          "visible": 0
+        },
         "stepfunctions_execution_arn": null,
-        "cloudwatch_metric": {"replays_rejected":1},
-        "http_status": {"401":1},
-        "side_effect_journal_count": 0
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "ReplayRejectedCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-006"
+          },
+          "value": 1,
+          "unit": "Count"
+        },
+        "http_status": {
+          "401": 1
+        },
+        "side_effect_journal_count": 0,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-006.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:48:00Z"
     },
     {
       "test_id": "IG-ATTACK-007",
@@ -118,40 +250,110 @@
       "expected_behavior": "Exactly one conditional-write winner and at most one successful side effect.",
       "actual_result": "50 concurrent workers raced; 1 acquired IN_PROGRESS; 49 lost; one charge committed.",
       "evidence": {
-        "ledger_snapshot": {"intentKey":"checkout_ig_007","eventId":"evt_01JY4M3M","status":"SUCCEEDED","resultHash":"sha256:a120...7e02"},
-        "dynamodb_condition_result": {"winners":1,"conditional_check_failed":49},
-        "sqs_dlq_metric": {"visible":0},
+        "ledger_snapshot": {
+          "intentKey": "checkout_ig_007",
+          "eventId": "evt_01JY4M3M",
+          "status": "SUCCEEDED",
+          "resultHash": "sha256:a120...7e02"
+        },
+        "dynamodb_condition_result": {
+          "winners": 1,
+          "conditional_check_failed": 49
+        },
+        "sqs_dlq_metric": {
+          "visible": 0
+        },
         "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:race-a91c7e2",
-        "cloudwatch_metric": {"duplicates_blocked":49,"side_effects_succeeded":1},
-        "http_status": {"202":50},
-        "side_effect_journal_count": 1
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "DuplicateBlockedCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-007"
+          },
+          "value": 49,
+          "unit": "Count"
+        },
+        "http_status": {
+          "202": 50
+        },
+        "side_effect_journal_count": 1,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-007.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:49:00Z"
     },
     {
       "test_id": "IG-ATTACK-008",
       "scenario": "ledger_invariant_check",
       "input_redacted_verbatim": "SELECT intentKey, COUNT(*) AS successfulSideEffectCount FROM side_effect_journal WHERE run_id='idemgate-prod-us-east-1-20260610T084215Z-a91c7e2' AND status='SUCCEEDED' GROUP BY intentKey HAVING COUNT(*) > 1",
-      "expected_behavior": "Query returns zero violating intent keys; ledger and journal have no orphan successes.",
-      "actual_result": "Zero rows returned; 3 successful intents each had one journal entry and one SUCCEEDED ledger result.",
+      "expected_behavior": "Safety query returns zero intents with more than one success; liveness query returns zero lost accepted-success intents; non-success terminal intents have zero unexpected silent successes.",
+      "actual_result": "Safety PASS: maximum successful side effects per intent was one. Liveness PASS: all 3 accepted success-terminal intents had exactly one outcome and zero were lost. No rejected, compensated, or repair intent had an unexpected success.",
       "evidence": {
-        "ledger_snapshot": {"succeeded_intents":3,"orphan_successes":0,"result_hash_mismatches":0},
-        "dynamodb_condition_result": {"violating_intent_keys":[]},
-        "sqs_dlq_metric": {"visible":0},
+        "ledger_snapshot": {
+          "accepted_success_intents": 3,
+          "accepted_success_intents_with_exactly_one_side_effect": 3,
+          "lost_accepted_success_intents": 0,
+          "maximum_successful_side_effects_per_intent": 1,
+          "unexpected_non_success_terminal_successes": 0,
+          "orphan_successes": 0,
+          "result_hash_mismatches": 0
+        },
+        "dynamodb_condition_result": {
+          "safety_violating_intent_keys": [],
+          "liveness_lost_intent_keys": [],
+          "unexpected_non_success_terminal_intent_keys": []
+        },
+        "sqs_dlq_metric": {
+          "visible": 0
+        },
         "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-proof-gate:invariant-a91c7e2",
-        "cloudwatch_metric": {"invariant_violations":0},
+        "cloudwatch_metric": {
+          "namespace": "IdemGate/ProofGate",
+          "metric_name": "InvariantViolationCount",
+          "dimensions": {
+            "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+            "TestId": "IG-ATTACK-008"
+          },
+          "value": 0,
+          "unit": "Count"
+        },
         "http_status": null,
-        "side_effect_journal_count": 3
+        "side_effect_journal_count": 3,
+        "artifact_pointer": "artifacts/tests/IG-ATTACK-008.json"
       },
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "observed_at": "2026-06-10T08:50:00Z"
     }
   ],
-  "summary": {"mandatory_tests":8,"passed":8,"failed":0,"errors":0,"missing_evidence":0},
+  "summary": {
+    "mandatory_tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "errors": 0,
+    "missing_evidence": 0,
+    "invariant_violations": 0,
+    "lost_accepted_success_intents": 0,
+    "unexpected_non_success_terminal_successes": 0
+  },
   "invariant_check": {
     "verdict": "PASS",
-    "violating_intent_keys": [],
-    "successful_intents_checked": 3,
-    "maximum_successful_side_effects_per_intent": 1
+    "safety": {
+      "assertion": "For every intentKey, successfulSideEffectCount <= 1",
+      "violating_intent_keys": [],
+      "maximum_successful_side_effects_per_intent": 1
+    },
+    "liveness": {
+      "assertion": "For every valid accepted success-terminal intent, successfulSideEffectCount == 1",
+      "accepted_success_intents": 3,
+      "accepted_success_intents_with_exactly_one_side_effect": 3,
+      "lost_accepted_success_intents": 0
+    },
+    "non_success_terminal_check": {
+      "unexpected_silent_successes": 0
+    },
+    "orphan_successes": 0,
+    "result_hash_mismatches": 0
   },
   "promotion_gate": "GO",
   "limitations": [
@@ -161,7 +363,7 @@
   "attestation": {
     "content_hash_algorithm": "SHA-256",
     "content_hash_scope": "canonical JSON excluding attestation",
-    "content_hash": "sha256:d3fd07b259ebff6301326646e2d9e80db0ae659798f6f71ca7d65d50e92816e3",
+    "content_hash": "sha256:69745b38ca09243e91c77da28d8911cee05761f6f68ea9f330ea732640658d80",
     "kms_signing_key_arn": "arn:aws:kms:us-east-1:123456789012:key/46dfb98f-86f7-4bd9-bb35-36c8bd07fda4",
     "signing_algorithm": "RSASSA_PSS_SHA_256",
     "signature_base64": "SAMPLE_SIGNATURE_NOT_CRYPTOGRAPHICALLY_VERIFIABLE",
@@ -171,5 +373,151 @@
     "object_lock_mode": "COMPLIANCE",
     "retain_until": "2027-06-10T08:47:31Z",
     "sample_notice": "Illustrative attestation only; a real run must upload, retrieve, and cryptographically verify its own bundle."
-  }
+  },
+  "proof_gate_results": [
+    {
+      "gate": "IG-ATTACK-001",
+      "scenario": "duplicate_storm",
+      "input_count": 100,
+      "successful_side_effect_count": 1,
+      "blocked_or_rejected_or_compensated_count": 99,
+      "aws_control": "DynamoDB TransactWriteItems",
+      "aws_resource": "idemgate-prod-ledger",
+      "recorded_result": "1 SUCCEEDED, 99 DUPLICATE_BLOCKED, 1 charge, 0 duplicate charges",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "DuplicateBlockedCount",
+        "value": 99,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-001.json",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "IG-ATTACK-002",
+      "scenario": "out_of_order",
+      "input_count": 1,
+      "successful_side_effect_count": 0,
+      "blocked_or_rejected_or_compensated_count": 1,
+      "aws_control": "Step Functions legal-transition condition",
+      "aws_resource": "idemgate-prod-saga",
+      "recorded_result": "1 illegal transition blocked, 0 fulfillments",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "IllegalTransitionBlockedCount",
+        "value": 1,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-002.json",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "IG-ATTACK-003",
+      "scenario": "timeout_retry",
+      "input_count": 2,
+      "successful_side_effect_count": 1,
+      "blocked_or_rejected_or_compensated_count": 1,
+      "aws_control": "Provider idempotency key + ledger reconciliation",
+      "aws_resource": "idemgate-prod-ledger",
+      "recorded_result": "1 prior charge returned, 0 new charges",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "TimeoutReconciledCount",
+        "value": 1,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-003.json",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "IG-ATTACK-004",
+      "scenario": "poison_payload",
+      "input_count": 1,
+      "successful_side_effect_count": 0,
+      "blocked_or_rejected_or_compensated_count": 1,
+      "aws_control": "API Gateway size limit + verifier schema gate",
+      "aws_resource": "idemgate-prod-webhook-api",
+      "recorded_result": "HTTP 400, 0 ledger writes, 0 side effects",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "PoisonPayloadRejectedCount",
+        "value": 1,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-004.json",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "IG-ATTACK-005",
+      "scenario": "partial_failure",
+      "input_count": 1,
+      "successful_side_effect_count": 0,
+      "blocked_or_rejected_or_compensated_count": 1,
+      "aws_control": "Step Functions compensation state",
+      "aws_resource": "idemgate-prod-saga",
+      "recorded_result": "1 refund compensation, 0 silently completed orders",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "SagaCompensationCount",
+        "value": 1,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-005.json",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "IG-ATTACK-006",
+      "scenario": "replay_attack",
+      "input_count": 1,
+      "successful_side_effect_count": 0,
+      "blocked_or_rejected_or_compensated_count": 1,
+      "aws_control": "HMAC timestamp gate, 300-second window",
+      "aws_resource": "idemgate-prod-verifier",
+      "recorded_result": "HTTP 401, 0 queue messages, 0 ledger writes",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "ReplayRejectedCount",
+        "value": 1,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-006.json",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "IG-ATTACK-007",
+      "scenario": "concurrency_race",
+      "input_count": 50,
+      "successful_side_effect_count": 1,
+      "blocked_or_rejected_or_compensated_count": 49,
+      "aws_control": "DynamoDB conditional intent claim",
+      "aws_resource": "idemgate-prod-ledger",
+      "recorded_result": "1 winner, 49 blocked, 1 charge",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "DuplicateBlockedCount",
+        "value": 49,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-007.json",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "IG-ATTACK-008",
+      "scenario": "ledger_invariant_check",
+      "input_count": 5,
+      "successful_side_effect_count": 3,
+      "blocked_or_rejected_or_compensated_count": 0,
+      "aws_control": "DynamoDB ledger + authoritative outcome journal query",
+      "aws_resource": "idemgate-prod-ledger",
+      "recorded_result": "safety: max successes/intent = 1; liveness: lost accepted-success intents = 0; unexpected non-success terminal successes = 0",
+      "cloudwatch_observation": {
+        "namespace": "IdemGate/ProofGate",
+        "metric_name": "InvariantViolationCount",
+        "value": 0,
+        "unit": "Count"
+      },
+      "artifact_pointer": "artifacts/tests/IG-ATTACK-008.json",
+      "verdict": "PASS"
+    }
+  ]
 }

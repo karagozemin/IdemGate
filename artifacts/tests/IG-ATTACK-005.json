@@ -1,0 +1,42 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-005",
+  "scenario": "partial_failure",
+  "observed_at": "2026-06-10T08:47:00Z",
+  "input_redacted_verbatim": "{\"eventId\":\"evt_01JY4M3K\",\"intentKey\":\"checkout_ig_005\",\"fault\":\"fulfillment_failure\"}",
+  "expected_behavior": "Payment is compensated or marked NEEDS_REPAIR; order is never silently completed.",
+  "actual_result": "Fulfillment failed; refund compensation succeeded; saga ended COMPENSATED.",
+  "evidence": {
+    "ledger_snapshot": {
+      "intentKey": "checkout_ig_005",
+      "eventId": "evt_01JY4M3K",
+      "status": "FAILED",
+      "resultHash": "sha256:bb82...e109",
+      "terminalState": "COMPENSATED"
+    },
+    "dynamodb_condition_result": {
+      "compensation_transition_committed": true
+    },
+    "sqs_dlq_metric": {
+      "visible": 0
+    },
+    "stepfunctions_execution_arn": "arn:aws:states:us-east-1:123456789012:execution:idemgate-saga:partial-failure-a91c7e2",
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "SagaCompensationCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-005"
+      },
+      "value": 1,
+      "unit": "Count"
+    },
+    "http_status": {
+      "202": 1
+    },
+    "side_effect_journal_count": 0,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-005.json"
+  },
+  "verdict": "PASS"
+}

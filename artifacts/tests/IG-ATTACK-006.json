@@ -1,0 +1,37 @@
+{
+  "evidence_class": "SAMPLE_NOT_DEPLOYMENT_PROOF",
+  "run_id": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+  "gate": "IG-ATTACK-006",
+  "scenario": "replay_attack",
+  "observed_at": "2026-06-10T08:48:00Z",
+  "input_redacted_verbatim": "{\"eventId\":\"evt_01JY4M3L\",\"intentKey\":\"checkout_ig_006\",\"signedAt\":\"2026-06-10T07:42:00Z\"}",
+  "expected_behavior": "Old correctly signed webhook is rejected before enqueueing.",
+  "actual_result": "Timestamp exceeded 300-second window; request rejected.",
+  "evidence": {
+    "ledger_snapshot": null,
+    "dynamodb_condition_result": {
+      "writes": 0
+    },
+    "sqs_dlq_metric": {
+      "messages_sent": 0,
+      "visible": 0
+    },
+    "stepfunctions_execution_arn": null,
+    "cloudwatch_metric": {
+      "namespace": "IdemGate/ProofGate",
+      "metric_name": "ReplayRejectedCount",
+      "dimensions": {
+        "RunId": "idemgate-prod-us-east-1-20260610T084215Z-a91c7e2",
+        "TestId": "IG-ATTACK-006"
+      },
+      "value": 1,
+      "unit": "Count"
+    },
+    "http_status": {
+      "401": 1
+    },
+    "side_effect_journal_count": 0,
+    "artifact_pointer": "artifacts/tests/IG-ATTACK-006.json"
+  },
+  "verdict": "PASS"
+}

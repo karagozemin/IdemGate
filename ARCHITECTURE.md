@@ -87,6 +87,28 @@ flowchart LR
     IC[Invariant check] --> C8[Ledger + outcome journal query] --> P8[0 violating intents]
 ```
 
+## Proof Receipt Chain
+
+The judge-facing unit of proof is not “the test passed.” It is a traceable receipt from attack input to immutable artifact:
+
+```mermaid
+flowchart LR
+    I["INPUT<br/>100x Stripe event<br/>evt_01JY4M3G"] --> C["AWS CONTROL<br/>DynamoDB TransactWriteItems<br/>idemgate-prod-ledger"]
+    C --> R["RECORDED RESULT<br/>1 SUCCEEDED<br/>99 DUPLICATE_BLOCKED<br/>1 charge"]
+    R --> M["CLOUDWATCH<br/>IdemGate/ProofGate<br/>DuplicateBlockedCount=99"]
+    M --> A["RAW RECEIPT<br/>artifacts/tests/<br/>IG-ATTACK-001.json"]
+    A --> S["ATTESTATION<br/>SHA-256 + KMS signature<br/>S3 Object Lock"]
+    S --> G["GO"]
+```
+
+Every gate emits the same fields: exact input count, named AWS control/resource, successful side-effect count, blocked/rejected/compensated count, exact CloudWatch metric observation, raw receipt path, and verdict. Missing any field makes the promotion gate `NO-GO`.
+
+The invariant query proves two properties rather than quietly substituting one for the other:
+
+- **Safety:** every intent has `successfulSideEffectCount <= 1`.
+- **Liveness:** every valid accepted intent in the success terminal state has `successfulSideEffectCount == 1`; lost accepted-success intents = `0`.
+- Rejected, compensated, and `NEEDS_REPAIR` intents are checked for unexpected silent success.
+
 ## Component Responsibilities
 
 | Component | Responsibility | Recorded proof | Pillars |
@@ -122,4 +144,3 @@ flowchart LR
 - `NEEDS_REPAIR` stops automation when reconciliation or compensation requires a human.
 - A reused `intentKey` with a different `operationHash` is a tampering/conflict error.
 - Any missing proof field or unverifiable outcome count makes promotion `NO-GO`.
-
