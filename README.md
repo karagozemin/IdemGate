@@ -1,5 +1,9 @@
 # IdemGate
 
+<p align="center">
+  <img src="assets/idemgate-logo.png" alt="IdemGate logo" width="180">
+</p>
+
 ![AWS](https://img.shields.io/badge/AWS-native-FF9900?logo=amazonaws&logoColor=white)
 ![Well-Architected](https://img.shields.io/badge/Well--Architected-6%2F6-37D7FF)
 ![Proof Gate](https://img.shields.io/badge/proof--gated-GO%20%2F%20NO--GO-00D49A)
