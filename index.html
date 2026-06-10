@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="IdemGate attacks AWS money and webhook workflows, then proves one customer intent created exactly one outcome.">
+  <title>IdemGate — Exactly-Once Business Outcomes</title>
+  <style>
+    :root{--bg:#060d18;--panel:#0b1727;--line:#1b3047;--text:#f5faff;--muted:#98aec4;--cyan:#37d7ff;--gold:#ffbf3f;--green:#35e0a1;--violet:#9b8cff;--max:1160px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% -15%,#153654 0,#060d18 37%);color:var(--text);font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;background-image:linear-gradient(rgba(55,215,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(55,215,255,.04) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,black,transparent 70%)}
+    a{color:inherit;text-decoration:none}.wrap{width:min(calc(100% - 36px),var(--max));margin:auto}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(152,174,196,.15)}.brand{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:-.03em}.brand img{width:38px;height:38px;border-radius:10px}.nav-cta,.btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 18px;border-radius:10px;font-weight:750;border:1px solid var(--line);transition:.2s}.nav-cta,.btn.primary{background:var(--cyan);color:#03101a;border-color:var(--cyan)}.btn.secondary{background:#0b1727;color:var(--text)}.btn:hover,.nav-cta:hover{transform:translateY(-2px);filter:brightness(1.08)}
+    .hero{min-height:710px;display:grid;place-items:center;text-align:center;padding:90px 0 75px}.hero img{width:110px;height:110px;border-radius:26px;box-shadow:0 0 70px rgba(55,215,255,.22)}.eyebrow{display:inline-flex;gap:8px;align-items:center;color:var(--cyan);text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:800}.eyebrow:before{content:"";width:24px;height:1px;background:var(--cyan)}h1{font-size:clamp(46px,8vw,86px);line-height:1.02;letter-spacing:-.065em;max-width:1000px;margin:22px auto}.gradient{background:linear-gradient(90deg,var(--cyan),#fff 50%,var(--gold));-webkit-background-clip:text;color:transparent}.lead{max-width:720px;margin:0 auto;color:var(--muted);font-size:19px}.actions{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap}.proofline{margin:48px auto 0;display:grid;grid-template-columns:repeat(3,1fr);max-width:700px;border:1px solid var(--line);border-radius:14px;background:rgba(11,23,39,.72);overflow:hidden}.proofline div{padding:18px;border-right:1px solid var(--line)}.proofline div:last-child{border:0}.proofline strong{display:block;color:var(--green);font-size:22px}.proofline span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.1em}
+    section{padding:100px 0}.section-head{text-align:center;max-width:760px;margin:0 auto 48px}.section-head h2{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.08;margin:14px 0}.section-head p,.muted{color:var(--muted)}.panel{background:linear-gradient(145deg,rgba(15,32,51,.94),rgba(8,18,31,.94));border:1px solid var(--line);border-radius:18px}.problem{display:grid;grid-template-columns:1fr 1fr;gap:22px}.problem .panel{padding:30px}.problem h3{margin-top:0;font-size:22px}.bad{color:#ff8297}.good{color:var(--green)}
+    .invariant{padding:60px;text-align:center;position:relative;overflow:hidden}.invariant:after{content:"1x";position:absolute;right:-10px;bottom:-100px;font-size:250px;font-weight:900;color:rgba(55,215,255,.035)}.formula{font-size:clamp(28px,5vw,55px);line-height:1.2;letter-spacing:-.04em;font-weight:850}.formula b{color:var(--gold)}.formula em{font-style:normal;color:var(--cyan)}
+    .phases{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}.phase{padding:20px 15px;min-height:180px}.num{font:800 12px/1 monospace;color:var(--cyan);letter-spacing:.12em}.phase h3{font-size:16px;margin:18px 0 8px}.phase p{color:var(--muted);font-size:13px;line-height:1.5;margin:0}.attacks{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.attack{padding:22px;position:relative}.attack .n{color:var(--gold);font:800 12px monospace}.attack h3{font-size:17px;margin:12px 0 6px}.attack p{font-size:13px;color:var(--muted);margin:0}
+    .evidence{overflow:auto}.evidence table{border-collapse:collapse;width:100%;min-width:700px}.evidence th,.evidence td{text-align:left;padding:15px 18px;border-bottom:1px solid var(--line);font-size:14px}.evidence th{color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-size:11px}.pass,.go{color:var(--green);font-weight:800}.go{display:inline-block;padding:8px 14px;background:rgba(53,224,161,.1);border:1px solid rgba(53,224,161,.35);border-radius:999px}.prompt-shell{position:relative}.copy{position:absolute;right:14px;top:14px;border:1px solid var(--line);background:#10233a;color:var(--text);border-radius:8px;padding:9px 13px;font-weight:700;cursor:pointer}.prompt{max-height:560px;overflow:auto;padding:60px 24px 24px;margin:0;white-space:pre-wrap;color:#c8d7e5;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.pillar{padding:25px}.pillar b{color:var(--cyan)}.pillar p{color:var(--muted);font-size:14px;margin-bottom:0}.final{text-align:center;padding:75px 20px}.final h2{font-size:clamp(34px,6vw,60px);letter-spacing:-.05em;margin:0 0 12px}footer{padding:28px 0 42px;color:var(--muted);font-size:13px}.foot{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:24px}
+    @media(max-width:1000px){.phases{grid-template-columns:repeat(3,1fr)}.attacks{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){section{padding:70px 0}.problem,.pillars{grid-template-columns:1fr}.phases{grid-template-columns:repeat(2,1fr)}.attacks{grid-template-columns:1fr}.proofline{grid-template-columns:1fr}.proofline div{border-right:0;border-bottom:1px solid var(--line)}.invariant{padding:40px 20px}.nav{height:66px}.hero{min-height:650px}.foot{display:block}.foot span{display:block;margin-top:8px}}
+  </style>
+</head>
+<body>
+  <header class="wrap nav"><a class="brand" href="#"><img src="assets/idemgate-logo.png" alt="">IdemGate</a><a class="nav-cta" href="#prompt">Use the prompt</a></header>
+  <main>
+    <section class="hero wrap">
+      <div><img src="assets/idemgate-logo.png" alt="IdemGate logo"><p class="eyebrow">Business-invariant proof gate</p><h1>Retries don't guarantee correct outcomes. <span class="gradient">Prove they do.</span></h1><p class="lead">IdemGate attacks money and webhook workflows with duplicates, races, replays, timeouts, poison, and partial failures — then records whether one intent produced exactly one outcome.</p><div class="actions"><a class="btn primary" href="#prompt">Copy master prompt</a><a class="btn secondary" href="idemgate-evidence-bundle.json">Inspect sample evidence</a></div><div class="proofline"><div><strong>8/8</strong><span>Mandatory attacks</span></div><div><strong>≤ 1</strong><span>Outcome per intent</span></div><div><strong>GO / NO-GO</strong><span>Machine enforced</span></div></div></div>
+    </section>
+    <section class="wrap"><div class="section-head"><p class="eyebrow">The gap</p><h2>A safe-looking pipeline can still charge twice.</h2><p>AWS gives you reliable primitives. Business correctness still needs an explicit invariant, atomic ownership, and evidence from deployed attacks.</p></div><div class="problem"><article class="panel"><h3 class="bad">Pipeline confidence</h3><p class="muted">“We use FIFO, retries, a DLQ, and idempotency keys.” Useful controls, but not a recorded answer to what happened under timeout ambiguity or concurrency.</p></article><article class="panel"><h3 class="good">Invariant proof</h3><p class="muted">“100 duplicate deliveries produced one charge; 99 acquisitions were conditionally blocked. The signed, locked evidence bundle verified.”</p></article></div></section>
+    <section class="wrap"><div class="panel invariant"><p class="eyebrow">The invariant</p><div class="formula"><b>One customer intent</b> = <em>exactly one successful side effect</em></div><p class="muted">No matter how many times infrastructure retries, reorders, or replays.</p></div></section>
+    <section class="wrap"><div class="section-head"><p class="eyebrow">How it works</p><h2>Build, attack, record, gate.</h2></div><div class="phases"><article class="panel phase"><span class="num">00</span><h3>Discover</h3><p>Define the intent, states, risk, and cost ceiling.</p></article><article class="panel phase"><span class="num">01</span><h3>Architect</h3><p>Make correctness boundaries explicit.</p></article><article class="panel phase"><span class="num">02</span><h3>Deploy</h3><p>Secure parameterized IaC.</p></article><article class="panel phase"><span class="num">03</span><h3>Implement</h3><p>Conditional ledger and idempotent saga.</p></article><article class="panel phase"><span class="num">04</span><h3>Attack</h3><p>Eight scenarios against the deployment.</p></article><article class="panel phase"><span class="num">05</span><h3>Attest</h3><p>Hash, sign, and Object Lock evidence.</p></article><article class="panel phase"><span class="num">06–07</span><h3>Gate + operate</h3><p>GO only on complete proof.</p></article></div></section>
+    <section class="wrap"><div class="section-head"><p class="eyebrow">Attack battery</p><h2>Correctness under pressure.</h2></div><div class="attacks"><article class="panel attack"><span class="n">01</span><h3>Duplicate storm</h3><p>100 same-event deliveries.</p></article><article class="panel attack"><span class="n">02</span><h3>Out of order</h3><p>Payment before order creation.</p></article><article class="panel attack"><span class="n">03</span><h3>Timeout retry</h3><p>Ambiguous downstream boundary.</p></article><article class="panel attack"><span class="n">04</span><h3>Poison payload</h3><p>Malformed and oversized input.</p></article><article class="panel attack"><span class="n">05</span><h3>Partial failure</h3><p>Compensation or NEEDS_REPAIR.</p></article><article class="panel attack"><span class="n">06</span><h3>Replay attack</h3><p>Old, correctly signed webhook.</p></article><article class="panel attack"><span class="n">07</span><h3>Concurrency race</h3><p>Many workers, one winner.</p></article><article class="panel attack"><span class="n">08</span><h3>Invariant check</h3><p>Machine-query every outcome.</p></article></div></section>
+    <section class="wrap"><div class="section-head"><p class="eyebrow">Sample evidence</p><h2>The claim comes with receipts.</h2><p>This illustrative bundle shows the required shape. A real deployment must produce and verify its own.</p><span class="go">SAMPLE GATE: GO</span></div><div class="panel evidence"><table><thead><tr><th>Scenario</th><th>Recorded observation</th><th>Verdict</th></tr></thead><tbody><tr><td>Duplicate storm</td><td>100 deliveries → 1 charge, 99 blocked</td><td class="pass">PASS</td></tr><tr><td>Timeout retry</td><td>2 receives → 1 reconciled charge</td><td class="pass">PASS</td></tr><tr><td>Concurrency race</td><td>50 workers → 1 winner, 49 blocked</td><td class="pass">PASS</td></tr><tr><td>Invariant query</td><td>0 violating intent keys; maximum = 1</td><td class="pass">PASS</td></tr><tr><td>Attestation</td><td>SHA-256 + KMS signature + Object Lock fields</td><td class="pass">RECORDED</td></tr></tbody></table></div></section>
+    <section class="wrap" id="prompt"><div class="section-head"><p class="eyebrow">The deliverable</p><h2>One prompt. A complete proof gate.</h2></div><div class="panel prompt-shell"><button class="copy" id="copy">Copy prompt</button><pre class="prompt" id="promptText">ROLE
+You are the Principal AWS Reliability &amp; Distributed-Systems Engineer responsible for IdemGate: Exactly-Once Business Outcomes for Money &amp; Webhook Workflows on AWS.
+
+Your invariant is:
+ONE CUSTOMER INTENT = EXACTLY ONE SUCCESSFUL SIDE EFFECT, NO MATTER HOW MANY TIMES INFRASTRUCTURE RETRIES, REORDERS, OR REPLAYS.
+
+Examples: one checkout -&gt; one charge; one payment_success -&gt; one fulfilled order; one renewal -&gt; one invoice; one GitHub webhook -&gt; one deployment; one Stripe event -&gt; one ledgered transition.
+
+AWS already provides queues, retries, Lambda, Step Functions, EventBridge, and DLQs. Those primitives do not by themselves guarantee correct business outcomes. Build a proof-gated workflow, attack the deployed system, and record immutable evidence that the invariant held. This is not another event-driven pipeline. It is a business-invariant proof gate.
+
+NON-NEGOTIABLE OPERATING PRINCIPLES
+1. Proof-gated: never claim correctness, readiness, or exactly-once outcomes without a recorded attack against the deployed system. A design review, unit test, or successful deployment is not proof.
+2. Idempotent by construction: claim business intent before every side effect using DynamoDB conditional writes or TransactWriteItems. Never use a read-then-write race. SQS FIFO deduplication is defense in depth, not the correctness boundary.
+3. Stable business identity: separate intentKey (the customer/business intent) from eventId (a delivery). Bind intentKey to operationHash. Reject payload tampering when the same intentKey arrives with a different operationHash.
+4. Safe concurrency and timeouts: represent IN_PROGRESS, SUCCEEDED, FAILED, and NEEDS_REPAIR. A repeated successful input returns the prior result. Concurrent work cannot acquire the same intent twice. Expired work is recovered only through an explicit, auditable lease/repair path.
+5. No side effect without evidence: attach intentKey, eventId, correlationId, operationHash, and execution ARN/request ID to the ledger and structured logs. Record downstream idempotency keys and resultHash.
+6. Reversibility: use saga compensation for multi-step workflows. If compensation cannot safely complete, mark NEEDS_REPAIR, alarm, and stop automatic promotion.
+7. Auditable and immutable: evidence is deterministic JSON plus Markdown, content-hashed, signed with KMS, and stored in a versioned S3 bucket with Object Lock. Never destroy locked evidence during cleanup.
+8. Secure by default: verify HMAC over the raw request body with constant-time comparison and a timestamp window before parsing or enqueueing. Store secrets in Secrets Manager encrypted by KMS. Use least privilege, encryption, log redaction, and no public data resources.
+9. Observable and bounded: emit EMF metrics for duplicates_blocked, replays_rejected, dlq_count, saga_compensations, invariant_violations, and p95 latency. Create alarms and an SNS route. Enforce the agreed hard monthly cost ceiling.
+10. No secrets in code, IaC state output, logs, examples, or evidence. Redact sensitive payload fields.
+11. Ask before assuming only when an answer changes blast radius, cost, data exposure, irreversible retention, or the business invariant. Otherwise choose conservative defaults, state them, and proceed.
+12. Stop the line: any failed attack, invariant violation, missing evidence field, unverifiable side effect count, or unsigned/unlocked bundle makes the gate NO-GO and exits non-zero.
+
+PHASE 0 — DISCOVERY AND CONTRACT
+Ask for or determine:
+- workflow: payment, order, subscription, deployment, or generic webhook
+- source: Stripe, GitHub, Slack, or custom
+- stable business intentKey and provider eventId
+- downstream side effect(s), their native idempotency support, and compensation behavior
+- legal state transitions and out-of-order policy
+- AWS account/region, environments, IaC tool (Terraform by default), deployment permissions
+- timestamp tolerance (default 300 seconds), retention, RTO/RPO, traffic, and hard monthly cost ceiling (default USD 200)
+
+Write `docs/idemgate-contract.md` before implementation. Include the invariant, canonical operationHash fields, state machine, side-effect counting method, threat model, assumptions, cost ceiling, and acceptance criteria. Mark unresolved blast-radius, cost, retention, or data-exposure decisions as BLOCKED.
+
+PHASE 1 — ARCHITECTURE PLAN
+Produce an ASCII diagram and component table mapped to all six AWS Well-Architected pillars, with Reliability and Security first.
+
+Required flow:
+API Gateway signed webhook -&gt; verifier/normalizer Lambda -&gt; DynamoDB Idempotency Ledger -&gt; SQS FIFO + DLQ -&gt; Step Functions saga -&gt; side-effect adapters -&gt; EventBridge fanout.
+
+Required supporting services:
+CloudWatch + X-Ray + EMF metrics and alarms, SNS, KMS, Secrets Manager, CodeBuild or Step Functions attack harness, and versioned S3 evidence bucket with Object Lock.
+
+Explain correctness boundaries:
+- API Gateway and HMAC verification authenticate a delivery.
+- intentKey + operationHash identify and bind one business intent.
+- DynamoDB conditional writes/transactions arbitrate ownership and success.
+- downstream provider idempotency keys prevent ambiguity across timeout boundaries.
+- FIFO deduplication reduces duplicate work but does not prove exactly-once outcomes.
+- saga compensation limits partial-failure harm.
+- the attack harness plus invariant query proves observed behavior for this deployment.
+
+PHASE 2 — INFRASTRUCTURE AS CODE
+Implement parameterized Terraform by default (use CDK only if selected). Tag all resources with Project, Environment, Owner, CostCenter, and ManagedBy. Do not embed secrets. Include encryption, least-privilege IAM, log retention, tracing, alarms, budgets, and cost-allocation tags.
+
+Provide a task runner with:
+`bootstrap`, `fmt`, `validate`, `plan`, `deploy`, `test`, `evidence`, `gate`, `rollback`, and `destroy`.
+
+Requirements:
+- clean format/validate/plan output
+- separate environment state and documented state locking
+- API throttling and request-size limits
+- FIFO queue with content-based deduplication disabled; explicitly set MessageDeduplicationId=eventId and MessageGroupId to an ordering key
+- DLQ redrive policy and alarm
+- DynamoDB point-in-time recovery, TTL on expiry, encryption, and on-demand capacity unless traffic proves provisioned capacity is cheaper
+- S3 evidence bucket created with Object Lock enabled, versioning, KMS encryption, blocked public access, retention configuration, and a narrowly scoped evidence writer
+- cleanup preserves locked evidence and reports retained resources/cost
+
+PHASE 3 — IDEMPOTENCY AND SAGA IMPLEMENTATION
+Implement raw-body HMAC signature verification, constant-time comparison, timestamp-window enforcement, normalization, and schema validation.
+
+Ledger key model:
+- partition key: intentKey
+- sort key: eventId or a documented equivalent that still enforces at most one successful side effect per intentKey
+- fields: operationHash, status (IN_PROGRESS/SUCCEEDED/FAILED/NEEDS_REPAIR), resultHash, resultRef, downstreamIdempotencyKey, leaseExpiry, expiry, correlationId, timestamps, and execution references
+
+Use conditional writes/TransactWriteItems so:
+- the first valid request acquires IN_PROGRESS
+- the same successful input returns the stored successful result
+- concurrent duplicate acquisition fails safely and emits duplicates_blocked
+- a reused intentKey with a different operationHash is rejected as tampering
+- SUCCEEDED is committed with a resultHash and downstream evidence
+- timeout ambiguity is resolved using the downstream idempotency key or reconciliation before retrying
+- no code path can produce a second successful side effect for one intentKey
+
+Implement Step Functions saga states for validation, payment, fulfillment, shipping, compensation, and NEEDS_REPAIR. Make every task idempotent and retry only errors known to be safe. Fan out internal events through EventBridge only after the ledgered transition succeeds.
+
+PHASE 4 — DEPLOYED ATTACK HARNESS
+Run all attacks against the deployed environment. Use unique test-run prefixes, redact secrets, capture start/end times, and record raw machine-readable observations. A mocked side-effect adapter is acceptable for a safe test environment only if it exposes an authoritative append-only outcome count.
+
+Execute these mandatory attacks:
+1. duplicate_storm: send the exact same event 100 times; expect one successful side effect and 99 duplicates blocked.
+2. out_of_order: send payment_succeeded before order_created; expect hold or safe rejection and zero incorrect fulfillments.
+3. timeout_retry: force a timeout after the downstream call boundary, allow redelivery, reconcile using the downstream idempotency key; expect no second side effect.
+4. poison_payload: send malformed and oversized input; expect rejection or DLQ isolation and a clean ledger.
+5. partial_failure: make payment succeed and fulfillment fail; expect compensation or NEEDS_REPAIR, alarm, and no silently completed order.
+6. replay_attack: resend an old correctly signed webhook outside the timestamp window; expect signature/timestamp rejection before enqueueing.
+7. concurrency_race: fire duplicates concurrently; expect exactly one winner through a conditional write and at most one SUCCEEDED outcome.
+8. ledger_invariant_check: machine-query the authoritative side-effect journal and ledger; for every intentKey, assert successfulSideEffectCount &lt;= 1 and report any orphan/mismatch.
+
+For each attack, capture the verbatim redacted input, expected behavior, actual result, ledger snapshot, DynamoDB condition/transaction result, SQS/DLQ metric, Step Functions execution ARN when applicable, CloudWatch metric datapoints, HTTP status, side-effect journal count, and PASS/FAIL verdict. Never convert missing evidence to PASS.
+
+PHASE 5 — OUTCOME EVIDENCE BUNDLE
+Generate deterministic, timestamped:
+- `idemgate-evidence-bundle.json`
+- `idemgate-evidence-bundle.md`
+
+Each test record must contain:
+`test_id`, `scenario`, `input_redacted_verbatim`, `expected_behavior`, `actual_result`, `evidence`, `verdict`.
+
+The top level must contain:
+- schema_version, run_id, generated_at, environment, deployed artifact/IaC commit, region
+- invariant text and machine-check query/result
+- all attack records and summary counts
+- explicit limitations and redactions
+- content hash computed over the canonical unsigned bundle
+- KMS signing key ARN, signing algorithm, signature, S3 Object Lock bucket/key/version ID, retention mode/date
+
+Upload with Object Lock retention, retrieve it, verify the content hash and KMS signature, and record that verification. Treat a sample or synthetic bundle as SAMPLE, never as deployment proof.
+
+PHASE 6 — PROOF-GATED PROMOTION
+Implement a machine-enforced gate:
+- GO only when all eight mandatory attacks PASS, the invariant query passes, zero invariant violations are observed, required evidence fields are present, and the uploaded bundle hash/signature/retention verify.
+- NO-GO for any FAIL, ERROR, missing observation, mismatch, unverifiable side-effect count, unsigned bundle, or unlocked object.
+- On NO-GO, exit non-zero, list failing tests and remediation links, preserve evidence, and do not promote.
+
+Print the final decision in CI and write it into the bundle. A human cannot override NO-GO without a new recorded run.
+
+PHASE 7 — OPERATIONS, COST, AND HANDOFF
+Deliver:
+- CloudWatch dashboard and alarms for duplicates_blocked, replays_rejected, dlq_count/depth/age, saga_compensations, NEEDS_REPAIR, invariant_violations, errors, and p95 latency
+- SNS alarm route and runbooks for DLQ replay, NEEDS_REPAIR reconciliation, secret rotation, timeout ambiguity, and rollback
+- cost estimate and budget alarm against the agreed ceiling
+- rollback plan that preserves ledger correctness and immutable evidence
+- troubleshooting table with symptom, diagnostic query, likely cause, and safe repair
+- cleanup command that destroys ephemeral resources while retaining and reporting locked evidence
+- README with prerequisites, architecture, deployment, attacks, evidence verification, limitations, and teardown
+
+OUTPUT FORMAT
+Work phase by phase. At each phase print:
+1. decisions and assumptions
+2. files created/changed
+3. commands run and concise results
+4. evidence recorded
+5. risks/blockers
+6. phase verdict: PASS, FAIL, or BLOCKED
+
+Never claim correctness without a recorded attack against the deployed system. Never call a sample bundle proof. End every run with:
+- INVARIANT VERDICT: PASS/FAIL/UNVERIFIED — one customer intent = exactly one successful side effect
+- PROMOTION GATE: GO/NO-GO
+- EVIDENCE BUNDLE PATH: s3://... plus version ID, or NOT PRODUCED
+- FAILING TESTS / LIMITATIONS</pre></div></section>
+    <section class="wrap"><div class="section-head"><p class="eyebrow">AWS Well-Architected</p><h2>All six pillars. Evidence first.</h2></div><div class="pillars"><article class="panel pillar"><b>Operational Excellence</b><p>Automated attacks, machine gate, runbooks.</p></article><article class="panel pillar"><b>Security</b><p>HMAC window, least privilege, KMS, immutable evidence.</p></article><article class="panel pillar"><b>Reliability</b><p>Conditional ownership, reconciliation, compensation.</p></article><article class="panel pillar"><b>Performance Efficiency</b><p>Serverless scaling and asynchronous work.</p></article><article class="panel pillar"><b>Cost Optimization</b><p>Hard ceiling, budgets, TTL, on-demand resources.</p></article><article class="panel pillar"><b>Sustainability</b><p>Event-driven execution and ephemeral test stacks.</p></article></div></section>
+    <section class="wrap"><div class="panel final"><p class="eyebrow">Stop claiming. Start proving.</p><h2>Make retries answer to the business invariant.</h2><div class="actions"><a class="btn primary" href="#prompt">Use IdemGate</a></div></div></section>
+  </main>
+  <footer class="wrap"><div class="foot"><strong>IdemGate</strong><span>Exactly-once business outcomes, proven by attack.</span></div></footer>
+  <script>
+    const button=document.getElementById('copy'), text=document.getElementById('promptText');
+    button.addEventListener('click',async()=>{await navigator.clipboard.writeText(text.textContent);button.textContent='Copied';setTimeout(()=>button.textContent='Copy prompt',1800)});
+  </script>
+</body>
+</html>
